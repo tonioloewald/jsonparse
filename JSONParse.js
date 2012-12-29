@@ -22,6 +22,8 @@ var json_array = json._array();
 json_array._push(1)._push("two")._push( json._object()._set("foo","bar") );
 Debug.Log( json_array.stringify() ); // [ 1, "two", {"foo":"bar"} ];
 */
+#pragma strict
+
 enum jsonType {
     _object = 0,
     _array = 1,
