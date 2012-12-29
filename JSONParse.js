@@ -22,6 +22,7 @@ var json_array = json._array();
 json_array._push(1)._push("two")._push( json._object()._set("foo","bar") );
 Debug.Log( json_array.stringify() ); // [ 1, "two", {"foo":"bar"} ];
 */
+
 #pragma strict
 
 enum jsonType {
@@ -85,7 +86,7 @@ class json {
     }
     
     public static function json_encode(source:String) : String{
-     var s: String;
+    	var s: String;
     	var i: int;
     	
 		for (i = 0; i < source.length; i++) {
@@ -283,7 +284,28 @@ class json {
         j.number_value = 0;
         return j;
     }
-}
+    
+    static function test(){
+		var s = "{ \"foo\": \"bar\", \"baz\" : [ 17, 18, 19, { \"fish\" : \"soup\" } ]}";
+	
+		Debug.Log( "JSONParse Unit Tests" );
+		var j:json = json.fromString(s);
+		Debug.Log( "tostring: " + j.toString() );
+		Debug.Log( "stringified: " + j.stringify() );
+	
+		Debug.Log( "obj.foo: " + j._get("foo").toString() );
+		Debug.Log( "obj.baz[2]: " + j._get("baz")._get(2).toString() );
+		Debug.Log( "obj.baz[3].fish: " + j._get("baz")._get(3)._get("fish").toString() );
+	
+		var json_obj:json = json._object(); // new empty object
+		json_obj._set("key", json._string("value")); 
+		Debug.Log( json_obj.stringify() ); // {"key":"value"}
+
+		var json_array = json._array();
+		json_array._push(1)._push("two")._push( json._object()._set("foo","bar") );
+		Debug.Log( json_array.stringify() ); // [ 1, "two", {"foo":"bar"} ];
+	}
+} /* END of json implementation */
 
 private static var at: int;
 private static var ch: String;
