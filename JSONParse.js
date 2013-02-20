@@ -111,7 +111,7 @@ class json {
 					s += source[i];
 			}
 		}
-		
+
 		return s;
     }
 
@@ -287,16 +287,16 @@ class json {
     
     static function test(){
 		var s = "{ \"foo\": \"bar\", \"baz\" : [ 17, 18, 19, { \"fish\" : \"soup\" } ]}";
-	
+
 		Debug.Log( "JSONParse Unit Tests" );
 		var j:json = json.fromString(s);
 		Debug.Log( "tostring: " + j.toString() );
 		Debug.Log( "stringified: " + j.stringify() );
-	
+
 		Debug.Log( "obj.foo: " + j._get("foo").toString() );
 		Debug.Log( "obj.baz[2]: " + j._get("baz")._get(2).toString() );
 		Debug.Log( "obj.baz[3].fish: " + j._get("baz")._get(3)._get("fish").toString() );
-	
+
 		var json_obj:json = json._object(); // new empty object
 		json_obj._set("key", json._string("value")); 
 		Debug.Log( json_obj.stringify() ); // {"key":"value"}
@@ -473,6 +473,7 @@ private static function word(): json {
             next("u");
             next("e");
             obj = json._true();
+        break;
         case "f":
             next("f");
             next("a");
@@ -480,17 +481,20 @@ private static function word(): json {
             next("s");
             next("e");
             obj = json._false();
+        break;
         case "n":
             next("n");
             next("u");
             next("l");
             next("l");
             obj = json._null();
+        break;
         default:
             obj = json._undefined();
+            error("Unexpected '" + ch + "'");
+        break;
     }
 
-    error("Unexpected '" + ch + "'");
     return obj;
 }
 
