@@ -4,15 +4,15 @@ A JSON Parser for the Unity Game Engine
  
 Based on json_parse by Douglas Crockford
 Ported by Philip Peterson (ironmagma/ppeterson)
+Made usable on iOS, Android, etc. (which requires strict typing) by Tonio Loewald
 
-Made usable on iOS (which requires strict typing) by Tonio Loewald
 Also used more modern UnityScript features (put back the "switch" statements)
 And fixed an error which prevented whitespace being used in one legitimate case
 And consequently wrapped everything in a convenient container class
 
 Usage:
 var parsed : json = json.fromString( json_string );
-var json_string = json.stringify();
+var json_string = parsed.stringify();
 
 var json_obj = json._object(); // new empty object
 json_obj._set("key", json._string("value")); 
