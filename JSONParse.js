@@ -24,6 +24,7 @@ Debug.Log( json_array.stringify() ); // [ 1, "two", {"foo":"bar"} ];
 */
 
 #pragma strict
+#pragma downcast
 
 enum jsonType {
     _object = 0,
@@ -83,6 +84,10 @@ class json {
                 break;
         }
         return s;
+    }
+    
+    function length(): int {
+        return values ? values.length : 0;
     }
     
     public static function json_encode(source:String) : String{
@@ -178,6 +183,10 @@ class json {
     function _push(s: String):json{
     	return _push( _string(s) );
     }
+    
+    function _push(b: boolean):json{
+    	return _push( _boolean(b) );
+    }
 
     static function _object(): json {
         var j = new json();
@@ -186,21 +195,51 @@ class json {
         j.values = new json[0];
         return j;
     }
-
-    function _set(key: String, value: json): json {
+    
+    function keyToIndex(key: String): int {
         if (type == jsonType._object) {
             for (var i = 0; i < keys.length; i++) {
-                if (keys[i] === key) {
-                    values[i] = value;
-                    return;
+                if (keys[i] == key) {
+                    return i;
                 }
             }
-            var k = new Array(keys);
-            var v = new Array(values);
-            k.push(key);
-            v.push(value);
-            keys = k.ToBuiltin(String);
-            values = v.ToBuiltin(json);
+        }
+        return -1;
+    }
+    
+    function has(key: String): boolean {
+        return keyToIndex(key) >= 0;   
+    }
+    
+    function getType( index: int, type: jsonType ): json{
+        if( index < 0 || index >= values.length ){
+            Debug.LogError("Out of bounds, index: " + index + ", type: " + type);
+            Debug.Break();
+            return _undefined();
+        } else {
+            var v : json = values[index];
+            if ( v.type != type ){
+                Debug.LogError("Expected type" + type + ", found " + v.type);
+                return _undefined();
+            } else {
+                return v;
+            }
+        }
+    }
+
+    function _set(key: String, value: json): json {
+        var index = keyToIndex(key);
+        if (type == jsonType._object) {
+            if( index < 0 ){
+                var k = new Array(keys);
+                var v = new Array(values);
+                k.push(key);
+                v.push(value);
+                keys = k.ToBuiltin(String);
+                values = v.ToBuiltin(json);
+            } else {
+                values[index] = value;
+            }
         } else {
             error(this, "_set called on non-object");
         }
@@ -215,15 +254,117 @@ class json {
     	return _set( key, _string(s) );
     }
     
-    function _get(key: String): json {
-        if (type == jsonType._object) {
-            for (var i = 0; i < keys.length; i++) {
-                if (keys[i] == key) {
-                    return values[i];
-                }
-            }
+    function getString(index: int): String {
+        return getType( index, jsonType._string ).string_value;
+    }
+    
+    function getString(key: String): String {
+        return getString( keyToIndex(key) );
+    }
+    
+    function getNumber(index: int): double {
+        return getType( index, jsonType._number ).number_value;
+    }
+    
+    function getNumber(key: String): double {
+        return getNumber( keyToIndex(key) );
+    }
+    
+    function getBoolean(index: int): boolean {
+        var v : json = getType(index, jsonType._boolean);
+        var b: boolean;
+        
+        // truthiness!
+        switch (type) {
+            case jsonType._string:
+                b = string_value !== "";
+                break;
+            case jsonType._undefined:
+            case jsonType._null:
+                b = false;
+                break;
+            case jsonType._boolean:
+                b = boolean_value;
+                break;
+            case jsonType._array:
+                b = true;
+                break;
+            case jsonType._object:
+                b = true;
+                break;
+            case jsonType._number:
+                b = number_value != 0;
+                break;
         }
-        return _undefined(); // undefined!
+        return b;
+    }
+    
+    function getRect(index: int): Rect {
+        var r : json = getObject(index);
+        
+		return Rect(
+		    r.getNumber("x"),
+		    r.getNumber("y"),
+		    r.getNumber("width"),
+		    r.getNumber("height")
+		);
+    }
+    
+    function getRect(key: String): Rect {
+        return getRect( keyToIndex(key) );
+    }
+    
+    function getVector2(index: int): Vector2 {
+        var r : json = getObject(index);
+        
+		return Vector2(
+		    r.getNumber("x"),
+		    r.getNumber("y")
+		);
+    }
+    
+    function getVector2(key: String): Vector2 {
+        return getVector2( keyToIndex(key) );
+    }
+    
+    function getVector3(index: int): Vector3 {
+        var r : json = getObject(index);
+        
+		return Vector3(
+		    r.getNumber("x"),
+		    r.getNumber("y"),
+		    r.getNumber("z")
+		);
+    }
+    
+    function getVector3(key: String): Vector3 {
+        return getVector3( keyToIndex(key) );
+    }
+    
+    function getBoolean(key: String): boolean {
+        return getBoolean( keyToIndex(key) );
+    }
+    
+    function getArray(index: int): json {
+       return getType( index, jsonType._array );
+    }
+    
+    function getArray(key: String): json {
+        return getArray( keyToIndex(key) );
+    }
+    
+    function getObject(index: int): json {
+       return getType( index, jsonType._object );
+    }
+    
+    function getObject(key: String): json {
+        return getObject( keyToIndex(key) );
+    }
+    
+    function _get(key: String): json {
+        var index : int = keyToIndex(key);
+        
+        return index < 0 ? _undefined() : _get(index); // undefined!
     }
     
     function _get(index: int): json{
@@ -293,9 +434,9 @@ class json {
 		Debug.Log( "tostring: " + j.toString() );
 		Debug.Log( "stringified: " + j.stringify() );
 
-		Debug.Log( "obj.foo: " + j._get("foo").toString() );
-		Debug.Log( "obj.baz[2]: " + j._get("baz")._get(2).toString() );
-		Debug.Log( "obj.baz[3].fish: " + j._get("baz")._get(3)._get("fish").toString() );
+		Debug.Log( "obj.foo: " + j.getString("foo") );
+		Debug.Log( "obj.baz[2]: " + j.getArray("baz").getNumber(0) );
+		Debug.Log( "obj.baz[3].fish: " + j.getArray("baz").getObject(3).getString("fish") );
 
 		var json_obj:json = json._object(); // new empty object
 		json_obj._set("key", json._string("value")); 
