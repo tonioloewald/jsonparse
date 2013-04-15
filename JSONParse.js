@@ -196,7 +196,7 @@ class json {
         return j;
     }
     
-    function keyToIndex(key: String): int {
+    function indexOf(key: String): int {
         if (type == jsonType._object) {
             for (var i = 0; i < keys.length; i++) {
                 if (keys[i] == key) {
@@ -208,7 +208,7 @@ class json {
     }
     
     function has(key: String): boolean {
-        return keyToIndex(key) >= 0;   
+        return indexOf(key) >= 0;   
     }
     
     function getType( index: int, type: jsonType ): json{
@@ -228,7 +228,7 @@ class json {
     }
 
     function _set(key: String, value: json): json {
-        var index = keyToIndex(key);
+        var index = indexOf(key);
         if (type == jsonType._object) {
             if( index < 0 ){
                 var k = new Array(keys);
@@ -259,7 +259,7 @@ class json {
     }
     
     function getString(key: String): String {
-        return getString( keyToIndex(key) );
+        return getString( indexOf(key) );
     }
     
     function getNumber(index: int): double {
@@ -267,7 +267,7 @@ class json {
     }
     
     function getNumber(key: String): double {
-        return getNumber( keyToIndex(key) );
+        return getNumber( indexOf(key) );
     }
     
     function getBoolean(index: int): boolean {
@@ -311,7 +311,7 @@ class json {
     }
     
     function getRect(key: String): Rect {
-        return getRect( keyToIndex(key) );
+        return getRect( indexOf(key) );
     }
     
     function getVector2(index: int): Vector2 {
@@ -324,7 +324,7 @@ class json {
     }
     
     function getVector2(key: String): Vector2 {
-        return getVector2( keyToIndex(key) );
+        return getVector2( indexOf(key) );
     }
     
     function getVector3(index: int): Vector3 {
@@ -338,11 +338,11 @@ class json {
     }
     
     function getVector3(key: String): Vector3 {
-        return getVector3( keyToIndex(key) );
+        return getVector3( indexOf(key) );
     }
     
     function getBoolean(key: String): boolean {
-        return getBoolean( keyToIndex(key) );
+        return getBoolean( indexOf(key) );
     }
     
     function getArray(index: int): json {
@@ -350,7 +350,7 @@ class json {
     }
     
     function getArray(key: String): json {
-        return getArray( keyToIndex(key) );
+        return getArray( indexOf(key) );
     }
     
     function getObject(index: int): json {
@@ -358,11 +358,11 @@ class json {
     }
     
     function getObject(key: String): json {
-        return getObject( keyToIndex(key) );
+        return getObject( indexOf(key) );
     }
     
     function _get(key: String): json {
-        var index : int = keyToIndex(key);
+        var index : int = indexOf(key);
         
         return index < 0 ? _undefined() : _get(index); // undefined!
     }
