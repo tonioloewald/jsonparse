@@ -14,22 +14,26 @@ var json_value : json = json.fromString( .... );
 
 In particular, there are convenience functions for grabbing values with no pesky underscores. These are:
 
-json_value.getNumber( index: int OR key: string ): double
-json_value.getString( index: int OR key: string ): String
-json_value.getBoolean( index: int OR key: string): boolean
-json_value.getArray( index: int OR key: string): json
-json_value.getObject( index: int OR key: string): json
-json_value.getRect( index: int OR key: string): Rect // expects x, y, width, height
-json_value.getVector2( index: int OR key: string): Vector2 // expects x, y
-json_value.getVector3( index: int OR key: string): Vector3 // expects x, y, z
+<pre>
+  json_value.getNumber( index: int OR key: string ): double
+  json_value.getString( index: int OR key: string ): String
+  json_value.getBoolean( index: int OR key: string): boolean
+  json_value.getArray( index: int OR key: string): json
+  json_value.getObject( index: int OR key: string): json
+  json_value.getRect( index: int OR key: string): Rect // expects x, y, width, height
+  json_value.getVector2( index: int OR key: string): Vector2 // expects x, y
+  json_value.getVector3( index: int OR key: string): Vector3 // expects x, y, z
+</pre>
 
 All of these will throw Debug.LogErrors if the expected value is not present, making debugging easier.
 
 There's also some other handy stuff such as:
 
-json_value.has( key: String ): boolean // does this key exist?
-json_value.length(): int // length of array or object property list, or 0
-json_value.indexOf( key: String ): int // index of the key, or -1 if not found
+<pre>
+  json_value.has( key: String ): boolean // does this key exist?
+  json_value.length(): int // length of array or object property list, or 0
+  json_value.indexOf( key: String ): int // index of the key, or -1 if not found
+</pre>
 
 I've used this to rewrite my own GUI library and it's almost pleasant to use it.
 
