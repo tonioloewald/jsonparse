@@ -270,21 +270,26 @@ class json {
         return getNumber( indexOf(key) );
     }
     
-    function getBoolean(index: int): boolean {
-        var v : json = getType(index, jsonType._boolean);
+    function getBoolean(index : int ) : boolean {
+    	var v : json = getType(index, jsonType._boolean);
+    	return v.boolean_value;
+    }
+    
+    function getUntypedBoolean(index: int): boolean {
+        var v : json = values[index];
         var b: boolean;
-        
+
         // truthiness!
-        switch (type) {
+        switch (v.type) {
             case jsonType._string:
-                b = string_value !== "";
+                b = v.string_value !== "";
                 break;
             case jsonType._undefined:
             case jsonType._null:
                 b = false;
                 break;
             case jsonType._boolean:
-                b = boolean_value;
+                b = v.boolean_value;
                 break;
             case jsonType._array:
                 b = true;
@@ -293,7 +298,7 @@ class json {
                 b = true;
                 break;
             case jsonType._number:
-                b = number_value != 0;
+                b = v.number_value != 0;
                 break;
         }
         return b;
@@ -343,6 +348,10 @@ class json {
     
     function getBoolean(key: String): boolean {
         return getBoolean( indexOf(key) );
+    }
+    
+    function getUntypedBoolean(key : String) : boolean {
+    	return getUntypedBoolean( indexOf(key) );
     }
     
     function getArray(index: int): json {
@@ -427,7 +436,7 @@ class json {
     }
     
     static function test(){
-		var s = "{ \"foo\": \"bar\", \"baz\" : [ 17, 18, 19, { \"fish\" : \"soup\" } ]}";
+		var s = "{ \"foo\": \"bar\", \"baz\" : [ 17, 18, 19, { \"fish\" : \"soup\" }, 0 ], \"NotTrue\" : false, \"NotFalse\" : true }";
 
 		Debug.Log( "JSONParse Unit Tests" );
 		var j:json = json.fromString(s);
@@ -437,6 +446,11 @@ class json {
 		Debug.Log( "obj.foo: " + j.getString("foo") );
 		Debug.Log( "obj.baz[2]: " + j.getArray("baz").getNumber(0) );
 		Debug.Log( "obj.baz[3].fish: " + j.getArray("baz").getObject(3).getString("fish") );
+		Debug.Log( "obj.NotTrue: " + j.getBoolean("NotTrue"));
+		Debug.Log( "obj.NotFalse: " + j.getBoolean("NotFalse"));
+		Debug.Log( "obj.foo (as boolean): " + j.getUntypedBoolean("foo"));
+		Debug.Log( "obj.baz[4] (as boolean): " + j.getArray("baz").getUntypedBoolean(4));
+		Debug.Log( "obj.baz[0] (as boolean): " + j.getArray("baz").getUntypedBoolean(0));
 
 		var json_obj:json = json._object(); // new empty object
 		json_obj._set("key", json._string("value")); 
